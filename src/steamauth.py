@@ -35,7 +35,7 @@ def steam_openid_auth(driver, steam_login: str, steam_password: str):
 
     current_url = driver.current_url
     if current_url != steamcommunity_url:
-        logger.info(f'Redirect from {steamcommunity_url} to {current_url} after imageLogin.click')
+        logger.debug(f'Redirect from {steamcommunity_url} to {current_url} after imageLogin.click')
         return
 
     # if the redirect did not occur, then is needed confirmation
@@ -95,7 +95,7 @@ def steam_openid_auth(driver, steam_login: str, steam_password: str):
         time.sleep(2)
         current_url = driver.current_url
         if current_url != steamcommunity_url:
-            logger.info(f'Redirected from {steamcommunity_url} to {current_url}')
+            logger.debug(f'Redirected from {steamcommunity_url} to {current_url}')
             return
 
         # if the redirect did not occur, then needed to click on the continue button
@@ -106,7 +106,7 @@ def steam_openid_auth(driver, steam_login: str, steam_password: str):
                 success_btn.click()
                 current_url = driver.current_url
                 if current_url != steamcommunity_url:
-                    logger.info(f'Redirected from {steamcommunity_url} to {current_url}')
+                    logger.debug(f'Redirected from {steamcommunity_url} to {current_url}')
                     return
 
             except:

@@ -5,4 +5,4 @@ from .logger import logger
 
 driver = uc.Chrome(headless=True)
 
-logger.info('Driver initialized')
+logger.debug('Driver initialized')

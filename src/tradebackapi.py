@@ -17,7 +17,7 @@ class TradeBackAPI:
         self.Cookie_Utils = CookieUtils(driver=self.driver)
         self.base_url = 'https://tradeback.io/en/'
 
-        logger.info('SkinsTable driver initialized')
+        logger.debug('SkinsTable driver initialized')
     
     # If there is a logout button, then are logged in.
     def is_logged_in(self) -> bool:
@@ -51,6 +51,7 @@ class TradeBackAPI:
         if not self.is_logged_in():
             logger.error('Unsuccessfully login via steam')
             raise ConnectionError('Unsuccessfully login via steam')
+        logger.info('Successfully logged in via steam')
 
     def login_via_cookies(self, filename: str):
 
@@ -59,7 +60,9 @@ class TradeBackAPI:
         self.driver.get(self.base_url)
 
         if not self.is_logged_in():
+            logger.info('Unsuccessfully logged in via cookies')
             raise ConnectionError(f'Failed to load cookies (filename={filename})')
+        logger.info('Successfully logged in via cookies')
 
     def save_cookies(self, filename: str):
         self.driver.get(self.base_url)
@@ -76,7 +79,7 @@ class TradeBackAPI:
 
     def collect_skins(self, Parameters: ParametersModel):
 
-        logger.info('Collecting items data...')
+        logger.info('Parameters setting...')
         formatted_parameters = ParametersUtils().format_parameters_to_url_path(Parameters=Parameters)
         url = f'{self.base_url}comparison#{formatted_parameters}'
         self.driver.get(url)
@@ -88,13 +91,13 @@ class TradeBackAPI:
         # after 10 attemps - try to reload the page, after 3 failed attempts throw an exception
         break_flag = False
         for attemp in range(3):
-            logger.info(f'Attemp {attemp+1} to get autoupdate status')
+            logger.debug(f'Attemp {attemp+1} to get autoupdate status')
             for _ in range(10):
                 autoupdate_status = self.driver.find_element(
                     by=By.ID, value='auto-update-status-title'
                 )
                 if autoupdate_status.text in ('(on)', '(off)'):
-                    logger.info('Autoupdate status received')
+                    logger.debug('Autoupdate status received')
                     break_flag = True
                     break
 
@@ -108,7 +111,7 @@ class TradeBackAPI:
         if not autoupdate_status.text:
             raise ConnectionError('Failed to load site page. Try again later')
 
-        logger.info(f'autoupdate_status = {autoupdate_status.text}')
+        logger.debug(f'autoupdate_status = {autoupdate_status.text}')
         # Disable autoupdate. If not disabled, then the table will be constantly
         # updated and will not allow to collect data
         if autoupdate_status.text == '(on)':
@@ -118,7 +121,7 @@ class TradeBackAPI:
             autoupdate_checkbox.find_element(by=By.XPATH, value="..").click()
             time.sleep(1)
             autoupdate_status.click()
-            logger.info('Autoupdate disabled')
+            logger.debug('Autoupdate disabled')
 
         time.sleep(2)
         # If parameters are not set, then the fields
@@ -166,7 +169,7 @@ class TradeBackAPI:
             for _ in range(2):
                 sort_button.click()
                 sort_button_class = sort_button.get_attribute('class')
-                logger.info(f'sort button class = "{sort_button_class}"')
+                logger.debug(f'sort button class = "{sort_button_class}"')
                 if sort_button_class.endswith(sort_direction):
                     break
         
